@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+#!/bin/sh
+die () {
+  echo >&2 "$@"
+  exit 1
+}
+
+[ "$#" -eq 1 ] || die "USAGE: ./encrypy folder_or_file_name"
+
+echo "Creating bkp file at $1.bkp"
+cp -r $1 $1.bkp
+
+tar zcvf - $1 | gpg -c > $1.tar.gz.gpg
+
+read -p "Delete bkp? " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+  rm -rf $1.bkp
+fi
+
+echo "Encryption finished"
+echo -e "\a"

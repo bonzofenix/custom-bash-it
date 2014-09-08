@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+#!/bin/sh
+die () {
+  echo >&2 "$@"
+  exit 1
+}
+
+[ "$#" -eq 1 ] || die "USAGE: ./decrypt folder_or_file_name.tar.gpg"
+
+echo "Creating bkp file at $1.bkp"
+cp $1 $1.bkp
+echo
+
+echo "Decrypting $1"
+gpg $1
+echo
+
+filename="$1"
+suffix=".gpg"
+tar xvfz ${filename%$suffix}
+echo
+
+read -p "Delete bkp? " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+  rm -rf $1.bkp
+fi
+
+echo "Decryption finished"
+echo -e "\a"
